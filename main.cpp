@@ -4,8 +4,8 @@
 using namespace std;
 class Kalkulator{
 public:
-unsigned int dokl=3;
-unsigned int dok=100;
+unsigned long long int dokl=3;
+unsigned long long int dok=100;
 void blad_wejscia();
 void usage();
 void about();
@@ -24,14 +24,13 @@ vector <char> obliczansko(vector <char> &komendy);
 unsigned long long int przecinek(std::vector<char> &a, std::vector<char> &b);
 };
 int main(){
-    setlocale(LC_ALL, "polish");
 	Kalkulator calc;
     string komendy;
-    calc.usage();
+    cout<<"If you feel a little lost just type 'help'"<<endl;
     while(true){
     bool cinek=false;
     unsigned long long int j=0;
-    cout<<"\nWprowadŸ polecenia"<<endl;
+    cout<<"\nProvide commands:"<<endl;
     cin>>komendy;
     if (komendy == "exit" || komendy == "q" || komendy == "quit")
         break;
@@ -40,11 +39,13 @@ int main(){
     else if(komendy=="about")
         calc.about();
     else if(komendy=="dokl"){
-    	cout << "wprowadŸ now¹ dok³adnoœæ wyniku: \n";
+    	cout << "New outcome precision: \n";
     	cin >> calc.dokl;
-    	cout << "wprowadŸ now¹ dok³adnoœæ dzielenia: \n";
-    	cin >> calc.dok;
-	}else{
+    	cout << "New division precision: \n";
+    	cin >> calc.dok;}
+    else if(komendy=="clear" || komendy =="cls")
+        system("cls");
+    else{
         vector<char>znaki(komendy.begin(),komendy.end());
         komendy.erase();
         if(!calc.walidacja(znaki)){
@@ -142,6 +143,7 @@ vector <char> Kalkulator::parser(vector <char> &znaki){
         else
             wynik.push_back(znaki[i]);
     }
+    wynik.push_back('c');
 if(!(stos.empty()))
     for (unsigned long long int i=0;i<=static_cast<unsigned long long int>(stos.size());i++){
         wynik.push_back(stos.top());
@@ -150,9 +152,8 @@ if(!(stos.empty()))
     return wynik;
 }
 vector <char> Kalkulator::obliczansko(vector <char> &komendy){
-    if (komendy.size()==1)
-        return komendy;
     stack <vector<char>> stos;
+    stos.push({{'0'}});
     vector <char> a,b,c;
     for (unsigned long long int i=0;i<static_cast<unsigned long long int>(komendy.size());i++){
         if(komendy[i]=='-' || komendy[i]=='+' || komendy[i]=='/' || komendy[i]=='*'){
@@ -318,13 +319,8 @@ std::vector<char> Kalkulator::odejmij(std::vector<char> a, std::vector<char> b) 
 }
 void Kalkulator::blad_wejscia(){
 	system("cls");
-    cout<<"Wprowadzono b³êdne lub Ÿle sformatowane dane, proszê zapoznaj siê z instrukcj¹ przed korzystaniem z programu."<<endl;
-    cout<<"Do najczêstszych b³êdów nale¿¹: "<<endl;
-    cout<<"U¿ywanie spacji w równaniu"<<endl;
-    cout<<"le umiejscowione przecinki"<<endl;
-    cout<<"U¿ycie kropek zamiast przecinków"<<endl;
-    cout<<"Niedomkniête lub Ÿle umiejscowione nawiasy"<<endl;
-    cout<<"U¿ycie liter w linii komend"<<endl;
+    cout<<"Commands you provided are not recognizable by program. Please refer to manual below."<<endl;
+    usage();
 }
 std::vector<char> Kalkulator::pomnoz(std::vector<char> a, std::vector<char> b) {
     sprawdz(a);
@@ -354,8 +350,8 @@ std::vector<char> Kalkulator::podziel(std::vector<char> a, std::vector<char> b) 
 	sprawdz(b);
 	wyrownaj(b,zero);
 	if(b==zero) {
-	blad_wejscia();
-	return {{'0'}};}
+        cout<<"You just tried to divide by zero, please don't do that."<<endl;
+        return {{'0'},{','},{'0'}};}
 	unsigned long long int x;
 	for(unsigned long long int i=0;i<b.size();i++)
         if(b[i]==','){
@@ -397,12 +393,17 @@ unsigned long long int Kalkulator::przecinek(std::vector<char> &a, std::vector<c
     }
 }
 void Kalkulator::usage(){
-	system("cls");
-    cout<<"Program przyjmuje wyra¿enie algebraiczne w postaci ci¹gu znaków w popularnej postaci infiksowej (tj. w takiej w jakiej na codzieñ pracujemy)"<<endl;
-    cout<<"Lista rozpoznawanych komend: "<<endl;
-    cout<<"help/manual/? - wyœwietla t¹ wiadomoœæ"<<endl;
-    cout<<"dokl - sluzy do ustawiania ¿¹danej dok³adnoœci rozwiniêcia po przecinku"<<endl;
-    cout<<"about - wypisuje informacje o autorach";
+    cout<<"Program accepts equations with basic arithmetic operators, e.g +,-,/,* and paretheses provided as a one-liner, without white spaces and formally correct"<<endl;
+    cout<<"Examples: "<<endl;
+    cout<<"(2,5*(-(-(-2)))/2) gives as a return of -2,5"<<endl;
+    cout<<"2,345,2+4,2/3 returns error because of 2 periods in one number"<<endl;
+    cout<<"(2 + 2)/2 also returns error because of white spaces"<<endl<<endl;
+    cout<<"List of recognized commands: "<<endl;
+    cout<<"help/manual/? - prints out this message"<<endl;
+    cout<<"dokl - used to set precision of results and precision of division."<<endl;
+    cout<<"about - prints something cool"<<endl;
+    cout<<"clear/cls - clears the console"<<endl;
+    cout<<"quit/q/exit - it's pretty much self explanatory"<<endl;
     }
 void Kalkulator::about()
 {
@@ -412,10 +413,10 @@ void Kalkulator::about()
             /                                                \
            |    _________________________________________     |
            |   |                                         |    |
-           |   |  Kalkulator du¿ych liczb C++            |    |
-           |   |  Made by Robert Taube && Micha³ Be³zak  |    |
+           |   |  Big numbers calculator C++             |    |
+           |   |  Made by Robert Taube && Michal Belzak  |    |
            |   |  github.com/robtau                      |    |
-           |   |                                         |    |
+           |   |  github.com/R3zn0w                      |    |
            |   |                                         |    |
            |   |                                         |    |
            |   |                                         |    |
