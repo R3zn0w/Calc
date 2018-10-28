@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <stack>
-using namespace std;
 class Kalkulator{
 public:
 unsigned long long int dokl=3;
@@ -10,28 +9,31 @@ void blad_wejscia();
 void usage();
 void about();
 void czysc(std::vector<char> &c);
+std::vector <char> parser(std::vector <char> &znaki);
+std::vector <char> obliczansko(std::vector <char> &komendy);
+bool walidacja(std::vector <char> &znaki);
+private:
+unsigned long long int przecinek(std::vector<char> &a, std::vector<char> &b);
 void wyrownaj(std::vector<char> &a, std::vector<char> &b);
 void sprawdz(std::vector<char> &a);
-bool walidacja(vector <char> &znaki);
 bool czyWieksza(std::vector<char> &a, std::vector<char> &b);
 std::vector<char> dodaj(std::vector<char> a, std::vector<char> b);
 std::vector<char> odejmij(std::vector<char> a, std::vector<char> b);
 std::vector<char> pomnoz(std::vector<char> a, std::vector<char> b);
-vector <char> dzialanie(vector <char> a, vector <char> b, char znak);
+std::vector <char> dzialanie(std::vector <char> a, std::vector <char> b, char znak);
 std::vector<char> podziel(std::vector<char> a, std::vector<char> b);
-vector <char> parser(vector <char> &znaki);
-vector <char> obliczansko(vector <char> &komendy);
-unsigned long long int przecinek(std::vector<char> &a, std::vector<char> &b);
 };
 int main(){
+	std::ios::sync_with_stdio(false);
+	setlocale(LC_ALL, "polish");
 	Kalkulator calc;
-    string komendy;
-    cout<<"If you feel a little lost just type 'help'"<<endl;
+    std::string komendy;
+    std::cout<<"W razie wątpliwości wpisz 'help'"<<std::endl;
     while(true){
     bool cinek=false;
     unsigned long long int j=0;
-    cout<<"\nProvide commands:"<<endl;
-    cin>>komendy;
+    std::cout<<"\nWprowadź polecenie:"<<std::endl;
+    std::cin>>komendy;
     if (komendy == "exit" || komendy == "q" || komendy == "quit")
         break;
     else if(komendy== "usage" || komendy=="manual" || komendy=="man" || komendy=="?" || komendy=="help")
@@ -39,14 +41,14 @@ int main(){
     else if(komendy=="about")
         calc.about();
     else if(komendy=="dokl"){
-    	cout << "New outcome precision: \n";
-    	cin >> calc.dokl;
-    	cout << "New division precision: \n";
-    	cin >> calc.dok;}
+    	std::cout << "Podaj nową dokładność wyniku: \n";
+    	std::cin >> calc.dokl;
+    	std::cout << "Podaj nową dokładność dzielenia: \n";
+    	std::cin >> calc.dok;}
     else if(komendy=="clear" || komendy =="cls")
         system("cls");
     else{
-        vector<char>znaki(komendy.begin(),komendy.end());
+        std::vector<char>znaki(komendy.begin(),komendy.end());
         komendy.erase();
         if(!calc.walidacja(znaki)){
             calc.blad_wejscia();
@@ -54,7 +56,7 @@ int main(){
         }
         znaki = calc.parser(znaki);
         znaki = calc.obliczansko(znaki);
-        vector<char> wynik;
+        std::vector<char> wynik;
         for (auto i:znaki){
             if(i==',')
                 cinek=true;
@@ -65,16 +67,15 @@ int main(){
             wynik.push_back(i);
     	}
     calc.czysc(wynik);
-    for(auto i:wynik) cout << i;
-    cout<<endl;
+    for(auto i:wynik) std::cout << i;
+    std::cout<<std::endl;
     }
 }
 return 0;
 }
-
-vector <char> Kalkulator::dzialanie(vector <char> a, vector <char> b, char znak){
+std::vector <char> Kalkulator::dzialanie(std::vector <char> a, std::vector <char> b, char znak){
     bool minusik1=false,minusik2=false;
-    vector <char> wynik;
+    std::vector <char> wynik;
     if (a[0]=='-'){
         a.erase(a.begin());
         minusik1=true;}
@@ -112,9 +113,9 @@ vector <char> Kalkulator::dzialanie(vector <char> a, vector <char> b, char znak)
     }
     return {{0}};
 }
-vector <char> Kalkulator::parser(vector <char> &znaki){
-    vector <char> wynik;
-    stack <char> stos;
+std::vector <char> Kalkulator::parser(std::vector <char> &znaki){
+    std::vector <char> wynik;
+    std::stack <char> stos;
     for (unsigned long long int i=0;i<static_cast<unsigned long long int>(znaki.size());i++){
         if (znaki[i]=='('){
                 stos.push(znaki[i]);
@@ -151,10 +152,10 @@ if(!(stos.empty()))
         }
     return wynik;
 }
-vector <char> Kalkulator::obliczansko(vector <char> &komendy){
-    stack <vector<char>> stos;
+std::vector <char> Kalkulator::obliczansko(std::vector <char> &komendy){
+    std::stack <std::vector<char>> stos;
     stos.push({{'0'}});
-    vector <char> a,b,c;
+    std::vector <char> a,b,c;
     for (unsigned long long int i=0;i<static_cast<unsigned long long int>(komendy.size());i++){
         if(komendy[i]=='-' || komendy[i]=='+' || komendy[i]=='/' || komendy[i]=='*'){
             a=stos.top();
@@ -184,7 +185,7 @@ vector <char> Kalkulator::obliczansko(vector <char> &komendy){
     }
     return stos.top();
 }
-bool Kalkulator::walidacja(vector <char> &znaki){
+bool Kalkulator::walidacja(std::vector <char> &znaki){
     bool przecinek=false;
     long long nawiasy=0;
     for(unsigned long long int i=0;i<static_cast<unsigned long long int>(znaki.size());i++){
@@ -319,7 +320,7 @@ std::vector<char> Kalkulator::odejmij(std::vector<char> a, std::vector<char> b) 
 }
 void Kalkulator::blad_wejscia(){
 	system("cls");
-    cout<<"Commands you provided are not recognizable by program. Please refer to manual below."<<endl;
+    std::cout<<"Nie rozpoznano polecenia!"<<std::endl;
     usage();
 }
 std::vector<char> Kalkulator::pomnoz(std::vector<char> a, std::vector<char> b) {
@@ -342,15 +343,14 @@ std::vector<char> Kalkulator::pomnoz(std::vector<char> a, std::vector<char> b) {
             a.insert((a.end()-2*x),',');
             czysc(a);
             return a;
-
 }
 std::vector<char> Kalkulator::podziel(std::vector<char> a, std::vector<char> b) {
-	vector<char> zero={{'0'},{','},{'0'}};
+	std::vector<char> zero={{'0'},{','},{'0'}};
 	sprawdz(a);
 	sprawdz(b);
 	wyrownaj(b,zero);
 	if(b==zero) {
-        cout<<"You just tried to divide by zero, please don't do that."<<endl;
+        std::cout<<"Dzielenie przez zero!"<<std::endl;
         return {{'0'},{','},{'0'}};}
 	unsigned long long int x;
 	for(unsigned long long int i=0;i<b.size();i++)
@@ -365,7 +365,7 @@ std::vector<char> Kalkulator::podziel(std::vector<char> a, std::vector<char> b) 
             a.erase(a.begin()+i);
             break;
 	}
-    vector<char> w(a.size()+dok,'0'), c;
+    std::vector<char> w(a.size()+dok,'0'), c;
     for(unsigned long long int i=0;i<dok;i++) a.push_back('0');
 	for(unsigned long long int i=0;i<a.size();i++){
 	c.push_back(a[i]);
@@ -393,51 +393,21 @@ unsigned long long int Kalkulator::przecinek(std::vector<char> &a, std::vector<c
     }
 }
 void Kalkulator::usage(){
-    cout<<"Program accepts equations with basic arithmetic operators, e.g +,-,/,* and paretheses provided as a one-liner, without white spaces and formally correct"<<endl;
-    cout<<"Examples: "<<endl;
-    cout<<"(2,5*(-(-(-2)))/2) gives as a return of -2,5"<<endl;
-    cout<<"2,345,2+4,2/3 returns error because of 2 periods in one number"<<endl;
-    cout<<"(2 + 2)/2 also returns error because of white spaces"<<endl<<endl;
-    cout<<"List of recognized commands: "<<endl;
-    cout<<"help/manual/? - prints out this message"<<endl;
-    cout<<"dokl - used to set precision of results and precision of division."<<endl;
-    cout<<"about - prints something cool"<<endl;
-    cout<<"clear/cls - clears the console"<<endl;
-    cout<<"quit/q/exit - it's pretty much self explanatory"<<endl;
+    std::cout<<"Program akceptuje równania z podstawowymi operatorami np. +,-,/,* oraz nawiasy wprowadzone w 1 wierszu, bez białych znaków, formalnie poprawne"<<std::endl;
+    std::cout<<"Przykłady: "<<std::endl;
+    std::cout<<"(2,5*(-(-(-2)))/2) = -2,5"<<std::endl;
+    std::cout<<"2,345,2+4,2/3 = error (2 przecinki w 1 liczbie)"<<std::endl;
+    std::cout<<"(2 + 2)/2 = error (spacje w równaniu)"<<std::endl<<std::endl;
+    std::cout<<"Lista komend: "<<std::endl;
+    std::cout<<"help/manual/? - zwraca tą wiadomość"<<std::endl;
+    std::cout<<"dokl - ustawia nową dokładność wyniku oraz dzielenia."<<std::endl;
+    std::cout<<"about - :)"<<std::endl;
+    std::cout<<"clear/cls - czyści okno wiersza poleceń"<<std::endl;
+    std::cout<<"quit/q/exit - wyjście z programu"<<std::endl;
     }
-void Kalkulator::about()
-{
+void Kalkulator::about(){
+	char tab[]={32,32,32,32,32,32,32,32,32,32,32,32,32,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,10,32,32,32,32,32,32,32,32,32,32,32,32,47,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,92,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,32,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,75,97,108,107,117,108,97,116,111,114,32,100,117,122,121,99,104,32,108,105,99,122,98,32,67,43,43,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,77,97,100,101,32,98,121,32,82,111,98,101,114,116,32,84,97,117,98,101,32,38,38,32,77,105,99,104,97,108,32,66,101,108,122,97,107,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,103,105,116,104,117,98,46,99,111,109,47,114,111,98,116,97,117,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,103,105,116,104,117,98,46,99,111,109,47,82,51,122,110,48,119,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,124,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,124,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,124,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,124,10,32,32,32,32,32,32,32,32,32,32,32,32,92,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,47,10,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,92,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,47,10,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,10,32,32,32,32,32,32,32,32,32,32,32,32,32,95,45,39,32,32,32,32,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,32,32,45,45,45,32,96,45,95,10,32,32,32,32,32,32,32,32,32,32,95,45,39,46,45,46,45,46,32,46,45,45,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,45,46,32,32,46,45,46,45,46,96,45,95,10,32,32,32,32,32,32,32,95,45,39,46,45,46,45,46,45,46,32,46,45,45,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,96,95,95,96,46,32,46,45,46,45,46,45,46,96,45,95,10,32,32,32,32,95,45,39,46,45,46,45,46,45,46,45,46,32,46,45,45,45,45,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,46,45,45,45,45,45,46,32,46,45,46,45,46,45,46,45,46,96,45,95,10,32,95,45,39,46,45,46,45,46,45,46,45,46,45,46,32,46,45,45,45,46,45,46,32,46,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,46,32,46,45,46,45,45,45,46,32,46,45,45,45,46,45,46,45,46,45,46,96,45,95,10,58,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,58,10,96,45,45,45,46,95,46,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,45,46,95,46,45,45,45,39};
 	system("Color 02");
-	std::string const abaut= R"~(
-             ________________________________________________
-            /                                                \
-           |    _________________________________________     |
-           |   |                                         |    |
-           |   |  Big numbers calculator C++             |    |
-           |   |  Made by Robert Taube && Michal Belzak  |    |
-           |   |  github.com/robtau                      |    |
-           |   |  github.com/R3zn0w                      |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |                                         |    |
-           |   |_________________________________________|    |
-           |                                                  |
-            \_________________________________________________/
-                   \___________________________________/
-                ___________________________________________
-             _-'    .-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.  --- `-_
-          _-'.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.--.  .-.-.`-_
-       _-'.-.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-`__`. .-.-.-.`-_
-    _-'.-.-.-.-. .-----.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-----. .-.-.-.-.`-_
- _-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.`-_
-:-------------------------------------------------------------------------:
-`---._.-------------------------------------------------------------._.---'
-	)~";
 	system("cls");
-    cout<<abaut;
+    for(auto i:tab) std::cout<<i;
 }
